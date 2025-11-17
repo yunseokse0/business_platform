@@ -1,32 +1,19 @@
-export const revalidate = 60;
+"use client";
 
 import { Kanban } from "@/components/sales/Kanban";
 import { OpportunityForm } from "@/components/sales/OpportunityForm";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/sessionOptions";
 import { FunnelCountsChart } from "@/components/charts/FunnelCountsChart";
 import { FunnelAmountChart } from "@/components/charts/FunnelAmountChart";
-
-async function fetchJSON<T>(path: string): Promise<T> {
-	const res = await fetch(path, { next: { revalidate: 60 } });
-	return res.json();
-}
+import { mockOpportunities, mockSalesMetrics } from "@/lib/mockData";
 
 type Opportunity = { id: string; title: string; amount: number; stage: string };
 
-export default async function SalesPage() {
-	const session = await getServerSession(authOptions as any);
-	const roles = ((session as any)?.user?.roles as string[] | undefined) ?? [];
-	if (!roles.some((r) => ["viewer", "editor", "manager", "admin"].includes(r))) {
-		return <div style={{ padding: 20 }}>권한이 없습니다.</div>;
-	}
-	const opportunities = await fetchJSON<Opportunity[]>("/api/sales/opportunities");
-	const metrics = await fetchJSON<{ stages: Record<string, { count: number; amount: number }> }>(
-		"/api/sales/metrics",
-	);
-	const columns = ["New", "Qualified", "Proposal", "Negotiation", "Won", "Lost"];
-	const chartDataCounts = columns.map((c) => ({ stage: c, count: metrics.stages[c]?.count ?? 0 }));
-	const chartDataAmount = columns.map((c) => ({ stage: c, amount: metrics.stages[c]?.amount ?? 0 }));
+export default function SalesPage() {
+	const opportunities = mockOpportunities;
+	const metrics = mockSalesMetrics;
+	const columns = ["New", "Qualified", "Proposal", "Negotiation", "Won", "Lost"] as const;
+	const chartDataCounts = columns.map((c) => ({ stage: c, count: (metrics.stages as any)[c]?.count ?? 0 }));
+	const chartDataAmount = columns.map((c) => ({ stage: c, amount: (metrics.stages as any)[c]?.amount ?? 0 }));
 
 	return (
 		<div style={{ padding: 20, display: "grid", gap: 16 }}>

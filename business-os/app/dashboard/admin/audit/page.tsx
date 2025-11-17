@@ -1,4 +1,6 @@
-export const revalidate = 60;
+"use client";
+
+import { mockAuditLogs } from "@/lib/mockData";
 
 type Audit = {
 	id: string;
@@ -9,23 +11,15 @@ type Audit = {
 	createdAt: string;
 };
 
-async function getAudits(): Promise<Audit[]> {
-	const res = await fetch(process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/audit` : "/api/admin/audit", {
-		next: { revalidate: 60 },
-	});
-	return res.json();
-}
-
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/sessionOptions";
-
-export default async function AuditPage() {
-	const session = await getServerSession(authOptions as any);
-	const roles = ((session as any)?.user?.roles as string[] | undefined) ?? [];
-	if (!roles.includes("admin")) {
-		return <div style={{ padding: 20 }}>권한이 없습니다.</div>;
-	}
-	const audits = await getAudits();
+export default function AuditPage() {
+	const audits: Audit[] = mockAuditLogs.map((log) => ({
+		id: log.id,
+		action: log.action,
+		entity: log.entity,
+		entityId: null,
+		userId: null,
+		createdAt: log.createdAt,
+	}));
 	return (
 		<div style={{ padding: 20 }}>
 			<h1>Audit Logs</h1>

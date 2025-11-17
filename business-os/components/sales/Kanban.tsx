@@ -20,11 +20,12 @@ export function Kanban({ initial }: { initial: Opportunity[] }) {
 		if (!id) return;
 		setItems((prev) => prev.map((p) => (p.id === id ? { ...p, stage } : p)));
 		// Persist
-		await fetch(`/api/sales/opportunities?id=${encodeURIComponent(id)}`, {
-			method: "PUT",
-			headers: { "content-type": "application/json", "x-role": "manager" },
-			body: JSON.stringify({ stage }),
-		});
+		// Mock save - no API call
+		// await fetch(`/api/sales/opportunities?id=${encodeURIComponent(id)}`, {
+		// 	method: "PUT",
+		// 	headers: { "content-type": "application/json", "x-role": "manager" },
+		// 	body: JSON.stringify({ stage }),
+		// });
 	};
 	const allowDrop = (e: React.DragEvent) => e.preventDefault();
 

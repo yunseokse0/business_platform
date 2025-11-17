@@ -3,10 +3,13 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 
-async function fetchOne(id: string) {
-	const res = await fetch(`/api/sales/opportunities?id=${encodeURIComponent(id)}`, { cache: "no-store" });
-	if (!res.ok) throw new Error("Failed to load");
-	return res.json();
+// Mock data - no API call needed
+import { mockOpportunities } from "@/lib/mockData";
+
+function fetchOne(id: string) {
+	const opportunity = mockOpportunities.find((o) => o.id === id);
+	if (!opportunity) throw new Error("Opportunity not found");
+	return Promise.resolve(opportunity);
 }
 
 export default function SalesDetailPage({ params }: { params: { id: string } }) {
@@ -40,12 +43,9 @@ export default function SalesDetailPage({ params }: { params: { id: string } }) 
 	const save = async () => {
 		setLoading(true);
 		try {
-			const res = await fetch(`/api/sales/opportunities?id=${encodeURIComponent(id)}`, {
-				method: "PUT",
-				headers: { "content-type": "application/json", "x-role": "manager" },
-				body: JSON.stringify({ title, amount, stage }),
-			});
-			if (!res.ok) throw new Error((await res.json()).error ?? "Failed");
+			// Mock save - just show success
+			await new Promise((resolve) => setTimeout(resolve, 500));
+			alert("저장되었습니다 (Mock)");
 			router.push("/dashboard/sales");
 		} catch (e: any) {
 			setError(e?.message ?? "Error");
@@ -58,11 +58,8 @@ export default function SalesDetailPage({ params }: { params: { id: string } }) 
 		if (!confirm("정말 삭제하시겠습니까?")) return;
 		setLoading(true);
 		try {
-			const res = await fetch(`/api/sales/opportunities?id=${encodeURIComponent(id)}`, {
-				method: "DELETE",
-				headers: { "x-role": "manager" },
-			});
-			if (!res.ok && res.status !== 204) throw new Error((await res.json()).error ?? "Failed");
+			// Mock delete
+			await new Promise((resolve) => setTimeout(resolve, 500));
 			router.push("/dashboard/sales");
 		} catch (e: any) {
 			setError(e?.message ?? "Error");
@@ -72,38 +69,116 @@ export default function SalesDetailPage({ params }: { params: { id: string } }) 
 	};
 
 	return (
-		<div style={{ padding: 20, display: "grid", gap: 12, maxWidth: 480 }}>
-			<h1>Opportunity Detail</h1>
-			{loading && <div>Loading...</div>}
-			{error && <div style={{ color: "#dc2626" }}>{error}</div>}
-			<label>
-				<div>Title</div>
-				<input value={title} onChange={(e) => setTitle(e.target.value)} style={{ padding: 8, border: "1px solid #e5e7eb", borderRadius: 6, width: "100%" }} />
-			</label>
-			<label>
-				<div>Amount</div>
-				<input type="number" value={amount} onChange={(e) => setAmount(parseFloat(e.target.value || "0"))} style={{ padding: 8, border: "1px solid #e5e7eb", borderRadius: 6, width: "100%" }} />
-			</label>
-			<label>
-				<div>Stage</div>
-				<select value={stage} onChange={(e) => setStage(e.target.value)} style={{ padding: 8, border: "1px solid #e5e7eb", borderRadius: 6, width: "100%" }}>
-					{["New", "Qualified", "Proposal", "Negotiation", "Won", "Lost"].map((s) => (
-						<option key={s} value={s}>
-							{s}
-						</option>
-					))}
-				</select>
-			</label>
-			<div style={{ display: "flex", gap: 8 }}>
-				<button onClick={save} disabled={loading} style={{ padding: "8px 12px", border: "1px solid #e5e7eb", borderRadius: 6, background: "#111827", color: "#fff" }}>
-					Save
-				</button>
-				<button onClick={del} disabled={loading} style={{ padding: "8px 12px", border: "1px solid #e5e7eb", borderRadius: 6 }}>
-					Delete
-				</button>
-				<button onClick={() => router.back()} style={{ padding: "8px 12px", border: "1px solid #e5e7eb", borderRadius: 6 }}>
-					Back
-				</button>
+		<div style={{ padding: 32, display: "grid", gap: 24, maxWidth: 800, background: "#f9fafb", minHeight: "100vh" }}>
+			<div>
+				<h1 style={{ margin: "0 0 8px", fontSize: 32, fontWeight: "bold", color: "#111827" }}>영업 기회 상세</h1>
+			</div>
+			<div style={{ 
+				background: "#fff", 
+				borderRadius: 12, 
+				padding: 32, 
+				boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+				display: "grid",
+				gap: 20
+			}}>
+				{loading && <div style={{ padding: 16, background: "#f3f4f6", borderRadius: 8 }}>로딩 중...</div>}
+				{error && <div style={{ padding: 16, background: "#fef2f2", color: "#dc2626", borderRadius: 8 }}>{error}</div>}
+				<label>
+					<div style={{ marginBottom: 8, fontSize: 14, fontWeight: "600", color: "#374151" }}>제목</div>
+					<input 
+						value={title} 
+						onChange={(e) => setTitle(e.target.value)} 
+						style={{ 
+							padding: 12, 
+							border: "1px solid #e5e7eb", 
+							borderRadius: 8, 
+							width: "100%",
+							fontSize: 16
+						}} 
+					/>
+				</label>
+				<label>
+					<div style={{ marginBottom: 8, fontSize: 14, fontWeight: "600", color: "#374151" }}>금액</div>
+					<input 
+						type="number" 
+						value={amount} 
+						onChange={(e) => setAmount(parseFloat(e.target.value || "0"))} 
+						style={{ 
+							padding: 12, 
+							border: "1px solid #e5e7eb", 
+							borderRadius: 8, 
+							width: "100%",
+							fontSize: 16
+						}} 
+					/>
+				</label>
+				<label>
+					<div style={{ marginBottom: 8, fontSize: 14, fontWeight: "600", color: "#374151" }}>단계</div>
+					<select 
+						value={stage} 
+						onChange={(e) => setStage(e.target.value)} 
+						style={{ 
+							padding: 12, 
+							border: "1px solid #e5e7eb", 
+							borderRadius: 8, 
+							width: "100%",
+							fontSize: 16
+						}}
+					>
+						{["New", "Qualified", "Proposal", "Negotiation", "Won", "Lost"].map((s) => (
+							<option key={s} value={s}>
+								{s}
+							</option>
+						))}
+					</select>
+				</label>
+				<div style={{ display: "flex", gap: 12, marginTop: 8 }}>
+					<button 
+						onClick={save} 
+						disabled={loading} 
+						style={{ 
+							padding: "12px 24px", 
+							border: "none", 
+							borderRadius: 8, 
+							background: "#111827", 
+							color: "#fff",
+							fontSize: 14,
+							fontWeight: "600",
+							cursor: "pointer"
+						}}
+					>
+						저장
+					</button>
+					<button 
+						onClick={del} 
+						disabled={loading} 
+						style={{ 
+							padding: "12px 24px", 
+							border: "1px solid #e5e7eb", 
+							borderRadius: 8,
+							background: "#fff",
+							fontSize: 14,
+							fontWeight: "600",
+							cursor: "pointer"
+						}}
+					>
+						삭제
+					</button>
+					<button 
+						onClick={() => router.back()} 
+						style={{ 
+							padding: "12px 24px", 
+							border: "1px solid #e5e7eb", 
+							borderRadius: 8,
+							background: "#fff",
+							fontSize: 14,
+							fontWeight: "600",
+							cursor: "pointer"
+						}}
+					>
+						뒤로가기
+					</button>
+				</div>
 			</div>
 		</div>
 	);

@@ -16,16 +16,52 @@ const links = [
 
 export function Sidebar() {
 	const { data: session } = useSession();
-	const roles = ((session as any)?.user?.roles as string[] | undefined) ?? [];
+	// Mock roles for development - show all links
+	const roles = ["admin", "manager", "editor", "viewer"];
+	
 	return (
-		<aside style={{ padding: 16, borderRight: "1px solid #e5e7eb" }}>
-			<nav style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+		<aside style={{ 
+			width: 240, 
+			padding: 24, 
+			borderRight: "1px solid #e5e7eb",
+			background: "#fff",
+			boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
+		}}>
+			<div style={{ marginBottom: 24 }}>
+				<h2 style={{ margin: 0, fontSize: 20, fontWeight: "bold", color: "#111827" }}>Business OS</h2>
+				<p style={{ margin: "4px 0 0", fontSize: 12, color: "#6b7280" }}>운영 시스템</p>
+			</div>
+			<nav style={{ display: "flex", flexDirection: "column", gap: 4 }}>
 				{links
 					.filter((l) => l.roles.some((r) => roles.includes(r)))
 					.map((l) => (
-						<Link key={l.href} href={l.href}>
-							{l.label}
-						</Link>
+						<div
+							key={l.href}
+							style={{
+								padding: "12px 16px",
+								borderRadius: 6,
+								transition: "all 0.2s",
+								cursor: "pointer"
+							}}
+							onMouseEnter={(e) => {
+								e.currentTarget.style.background = "#f3f4f6";
+							}}
+							onMouseLeave={(e) => {
+								e.currentTarget.style.background = "transparent";
+							}}
+						>
+							<Link 
+								href={l.href}
+								style={{
+									textDecoration: "none",
+									color: "#374151",
+									fontSize: 14,
+									display: "block"
+								}}
+							>
+								{l.label}
+							</Link>
+						</div>
 					))}
 			</nav>
 		</aside>

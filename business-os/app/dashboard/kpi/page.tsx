@@ -2,27 +2,24 @@
 
 import { Line, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import * as React from "react";
+import { mockKPIs } from "@/lib/mockData";
 
-type KPI = { id: string; title: string; value: number; target: number; createdAt: string };
+type KPI = { id: string; title: string; value: number; target: number; createdAt?: string };
 
 export default function KPIPage() {
-	const [kpis, setKpis] = React.useState<KPI[]>([]);
-	const [title, setTitle] = React.useState("KPI");
+	const [title, setTitle] = React.useState("Monthly Revenue");
+	
+	// Mock data with timestamps for chart
+	const mockKPIsWithDates: KPI[] = mockKPIs.map((kpi, index) => ({
+		...kpi,
+		createdAt: new Date(Date.now() - (mockKPIs.length - index) * 24 * 60 * 60 * 1000).toISOString(),
+	}));
 
-	React.useEffect(() => {
-		(async () => {
-			const res = await fetch("/api/kpi");
-			const data = (await res.json()) as KPI[];
-			setKpis(data);
-			setTitle(data[0]?.title || "KPI");
-		})();
-	}, []);
-
-	const series = kpis
+	const series = mockKPIsWithDates
 		.filter((k) => k.title === title)
 		.slice(0, 12)
 		.reverse()
-		.map((k) => ({ t: new Date(k.createdAt).toLocaleDateString(), value: k.value, target: k.target }));
+		.map((k) => ({ t: new Date(k.createdAt || Date.now()).toLocaleDateString(), value: k.value, target: k.target }));
 
 	return (
 		<div style={{ padding: 20 }}>

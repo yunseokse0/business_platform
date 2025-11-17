@@ -3,7 +3,7 @@ import { prisma } from "./prisma";
 
 type AuditEvent = {
 	action: "create" | "update" | "delete";
-	entity: "kpi" | "lead" | "document";
+	entity: "kpi" | "lead" | "document" | "task" | "incident" | "brandAsset" | "guideline" | "campaign" | "employee" | "leave" | "expense" | "budget" | "requirement" | "release";
 	entityId?: string;
 	userId?: string;
 	meta?: Record<string, unknown>;

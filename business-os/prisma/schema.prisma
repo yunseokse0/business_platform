@@ -51,4 +51,241 @@ model AuditLog {
   createdAt DateTime @default(now())
 }
 
+// Operation Module
+model Task {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  status      String   // e.g., Todo, InProgress, Done
+  priority    String?  // e.g., Low, Medium, High
+  assigneeId  String?
+  dueDate     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Runbook {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  steps       Json?    // Array of steps
+  tags        String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Incident {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  severity    String   // e.g., Low, Medium, High, Critical
+  status      String   // e.g., Open, InProgress, Resolved, Closed
+  assigneeId  String?
+  resolvedAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Brand Module
+model BrandAsset {
+  id          String   @id @default(cuid())
+  name        String
+  type        String   // e.g., Logo, Image, Video, Document
+  url         String?
+  description String?
+  tags        String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Guideline {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  category    String?  // e.g., Brand, Design, Voice
+  tags        String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CampaignAsset {
+  id          String   @id @default(cuid())
+  campaignId  String?
+  name        String
+  type        String
+  url         String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Marketing Module
+model Campaign {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  status      String   // e.g., Planning, Active, Paused, Completed
+  startDate   DateTime?
+  endDate     DateTime?
+  budget      Float?
+  spent       Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Channel {
+  id          String   @id @default(cuid())
+  name        String
+  type        String   // e.g., Social, Email, SEO, Paid
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Content {
+  id          String   @id @default(cuid())
+  title       String
+  content     String?
+  type        String   // e.g., Blog, Social, Email, Video
+  channelId   String?
+  campaignId  String?
+  status      String   // e.g., Draft, Published, Archived
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// HR Module
+model Employee {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  department  String?
+  position    String?
+  status      String   // e.g., Active, OnLeave, Terminated
+  hireDate    DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Policy {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  category    String?  // e.g., HR, Code, Security
+  version     Int      @default(1)
+  effectiveDate DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Leave {
+  id          String   @id @default(cuid())
+  employeeId  String?
+  type        String   // e.g., Annual, Sick, Personal
+  startDate   DateTime
+  endDate     DateTime
+  status      String   // e.g., Pending, Approved, Rejected
+  reason      String?
+  approverId  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Recruitment {
+  id          String   @id @default(cuid())
+  title       String
+  department  String?
+  position    String?
+  status      String   // e.g., Open, Interviewing, Offer, Closed
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Finance Module
+model Expense {
+  id          String   @id @default(cuid())
+  title       String
+  amount      Float
+  category    String?  // e.g., Travel, Office, Marketing
+  description String?
+  status      String   // e.g., Pending, Approved, Rejected, Paid
+  submitterId String?
+  approverId  String?
+  approvedAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Budget {
+  id          String   @id @default(cuid())
+  name        String
+  amount      Float
+  spent       Float    @default(0)
+  category    String?
+  period      String?  // e.g., Monthly, Quarterly, Yearly
+  startDate   DateTime?
+  endDate     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Invoice {
+  id          String   @id @default(cuid())
+  number      String   @unique
+  clientName  String?
+  amount      Float
+  status      String   // e.g., Draft, Sent, Paid, Overdue
+  dueDate     DateTime?
+  paidAt      DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Approval {
+  id          String   @id @default(cuid())
+  entityType  String   // e.g., Expense, Leave, Invoice
+  entityId    String
+  approverId  String?
+  status      String   // e.g., Pending, Approved, Rejected
+  comment     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Product Module
+model Requirement {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  priority    String   // e.g., Low, Medium, High, Critical
+  status      String   // e.g., Backlog, InProgress, Done, Cancelled
+  assigneeId  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model RoadmapItem {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  quarter     String?  // e.g., Q1, Q2, Q3, Q4
+  year        Int?
+  status      String   // e.g., Planned, InProgress, Completed
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Release {
+  id          String   @id @default(cuid())
+  name        String
+  version     String
+  description String?
+  status      String   // e.g., Planning, Development, Testing, Released
+  releaseDate DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 
