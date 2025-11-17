@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model KPI {
+  id        String   @id @default(cuid())
+  title     String
+  value     Float
+  target    Float
+  ownerId   String?
+  createdAt DateTime @default(now())
+}
+
+model Lead {
+  id        String   @id @default(cuid())
+  name      String
+  stage     String
+  history   Json?
+  createdAt DateTime @default(now())
+}
+
+model Document {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  tags      String[]
+  createdAt DateTime @default(now())
+}
+
+model Opportunity {
+  id        String   @id @default(cuid())
+  title     String
+  amount    Float    @default(0)
+  stage     String   // e.g., New, Qualified, Proposal, Negotiation, Won, Lost
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  entity    String
+  entityId  String?
+  userId    String?
+  meta      Json?
+  createdAt DateTime @default(now())
+}
+
+
